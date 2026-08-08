@@ -3,7 +3,7 @@ import { ThemeSwitcher } from "@/components/theme-switcher";
 import Link from "next/link";
 import { Suspense } from "react";
 
-export default function ProtectedLayout({ children }: {
+export default function DashboardLayout({ children }: {
   children: React.ReactNode;
 }) {
   return (

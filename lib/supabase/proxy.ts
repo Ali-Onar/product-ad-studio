@@ -1,16 +1,23 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { hasEnvVars } from "../utils";
 import { Database } from "@/types/database.types";
 
-export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
+export interface SessionResult {
+  /**
+   * Response carrying the refreshed auth cookies. Return it as-is, or copy its
+   * cookies onto whatever response you return instead.
+   */
+  response: NextResponse;
+  isAuthenticated: boolean;
+}
 
-  // If the env vars are not set, skip proxy check. You can remove this
-  // once you setup the project.
-  if (!hasEnvVars) {
-    return supabaseResponse;
-  }
+/**
+ * Refreshes the Supabase session cookies for the incoming request.
+ * Route protection is decided in `proxy.ts` — this function only reports
+ * whether a valid session exists. Assumes the Supabase env vars are set.
+ */
+export async function updateSession(request: NextRequest): Promise<SessionResult> {
+  let supabaseResponse = NextResponse.next({ request });
 
   // With Fluid compute, don't put this client in a global environment
   // variable. Always create a new one on each request.
@@ -42,33 +49,6 @@ export async function updateSession(request: NextRequest) {
   // IMPORTANT: If you remove getClaims() and you use server-side rendering
   // with the Supabase client, your users may be randomly logged out.
   const { data } = await supabase.auth.getClaims();
-  const user = data?.claims;
 
-  if (
-    request.nextUrl.pathname !== "/" &&
-    !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth")
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
-    const url = request.nextUrl.clone();
-    url.pathname = "/auth/login";
-
-    return NextResponse.redirect(url);
-  }
-
-  // IMPORTANT: You *must* return the supabaseResponse object as it is.
-  // If you're creating a new response object with NextResponse.next() make sure to:
-  // 1. Pass the request in it, like so:
-  //    const myNewResponse = NextResponse.next({ request })
-  // 2. Copy over the cookies, like so:
-  //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
-  // 3. Change the myNewResponse object to fit your needs, but avoid changing
-  //    the cookies!
-  // 4. Finally:
-  //    return myNewResponse
-  // If this is not done, you may be causing the browser and server to go out
-  // of sync and terminate the user's session prematurely!
-
-  return supabaseResponse;
+  return { response: supabaseResponse, isAuthenticated: Boolean(data?.claims) };
 }

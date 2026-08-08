@@ -57,14 +57,17 @@ No test framework is configured yet.
 ```
 app/
   auth/           Authentication pages and the email/OAuth confirm route
-  protected/      Authenticated-only routes (redirects to /auth/login)
+  dashboard/      Authenticated-only routes (redirects to /auth/login)
 components/
   ui/             shadcn/ui primitives
 lib/
-  supabase/       Browser, server, and middleware Supabase clients
+  supabase/       Browser, server, and proxy Supabase clients
 types/            Generated Supabase database types
 supabase/         SQL migrations
+proxy.ts          Next.js Proxy — session refresh and route protection
 ```
+
+Route protection lives in `proxy.ts`: only the prefixes listed in `PROTECTED_PREFIXES` require a session, everything else is public.
 
 Styling is configured CSS-first in `app/globals.css` — Tailwind v4 has no `tailwind.config.ts`. Design tokens are defined as CSS variables and exposed to Tailwind through `@theme inline`.
 

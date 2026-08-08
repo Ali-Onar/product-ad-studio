@@ -1,27 +1,28 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Bu dosya, bu repository üzerinde çalışırken Claude Code'a (claude.ai/code) rehberlik eder.
 
-## Project Overview
+## Proje Özeti
 
-Product Ad Studio — AI-powered visual and video ad generation platform (SaaS) for e-commerce sellers. Users upload product photos, AI generates professional product photos and animated video ads.
+Product Ad Studio — e-ticaret satıcıları için AI destekli görsel ve video reklam üretim platformu (SaaS). Kullanıcılar ürün fotoğraflarını yükler, AI profesyonel ürün fotoğrafları ve animasyonlu video reklamlar üretir.
 
-Built on Next.js 16 (App Router), React 19, TypeScript 5, Supabase, TailwindCSS, and shadcn/ui.
+Next.js 16 (App Router), React 19, TypeScript 5, Supabase, TailwindCSS ve shadcn/ui üzerine kuruludur.
 
-### Core Rules
+### Temel Kurallar
 
-- **Language**: All UI text must be in English
-- **UI Library**: shadcn/ui first, additional Radix primitives only when needed
-- **Tables**: Use shadcn Data Table (TanStack Table)
-- **State**: Supabase client is sufficient, TanStack Query not needed (for now)
-- **ESLint**: Always respect the rules in `eslint.config.mjs` — run `npm run lint` before committing
+- **Dil**: Tüm UI metinleri İngilizce olmalı
+- **Commit**: Commit mesajları her zaman İngilizce yazılır
+- **UI Library**: Önce shadcn/ui, gerekmedikçe ek Radix primitive kullanılmaz
+- **Tablolar**: shadcn Data Table (TanStack Table) kullanılır
+- **State**: Supabase client yeterli, TanStack Query gerekli değil (şimdilik)
+- **ESLint**: `eslint.config.mjs` içindeki kurallara her zaman uyulur — commit öncesi `npm run lint` çalıştır
 
-## Commands
+## Komutlar
 
 - **Dev server:** `npm run dev`
 - **Build:** `npm run build`
 - **Lint:** `npm run lint` (ESLint flat config, v9+)
-- **No test framework is configured.**
+- **Test framework tanımlı değil.**
 
 ## Tech Stack
 
@@ -31,92 +32,96 @@ Built on Next.js 16 (App Router), React 19, TypeScript 5, Supabase, TailwindCSS,
 - **Payments:** Lemon Squeezy
 - **Forms & Validation:** React Hook Form, Zod
 - **Data Tables:** TanStack Table
-- **Email:** Resend (if needed)
+- **Email:** Resend (gerekirse)
 - **Infrastructure:** Cloudflare (Workers, R2 storage, DNS, bot protection)
 
-## Architecture
+## Mimari
 
 ### Routing (App Router)
 
-- `app/` — Next.js App Router pages and layouts
-- `app/auth/` — Authentication pages (login, sign-up, forgot-password, update-password) and `confirm/route.ts` API route for OAuth/email confirmation
-- `app/protected/` — Authenticated-only routes; layout redirects unauthenticated users to `/auth/login`
+- `app/` — Next.js App Router sayfaları ve layout'ları
+- `app/auth/` — Authentication sayfaları (login, sign-up, forgot-password, update-password) ve OAuth/email doğrulaması için `confirm/route.ts` API route'u
+- `app/dashboard/` — Yalnızca authenticated kullanıcılara açık route'lar; oturumu olmayan kullanıcılar `proxy.ts` tarafından `/auth/login`'e yönlendirilir
+- Diğer tüm route'lar (landing page, pricing, about, contact, blog) public'tir
 
 ### Authentication
 
-- Supabase SSR integration via `@supabase/ssr`
-- `lib/supabase/client.ts` — browser-side Supabase client
-- `lib/supabase/server.ts` — server-side client with cookie-based sessions
-- `lib/supabase/proxy.ts` (also exported as `proxy.ts`) — Next.js middleware that refreshes sessions and guards protected routes
-- Auth forms in `components/` are client components (`"use client"`); auth checks like `AuthButton` are server components
+- `@supabase/ssr` üzerinden Supabase SSR entegrasyonu
+- `lib/supabase/client.ts` — browser tarafı Supabase client
+- `lib/supabase/server.ts` — cookie tabanlı session'lar ile server tarafı client
+- `proxy.ts` (proje kökü) — Next.js 16 Proxy dosyası (eski adıyla `middleware.ts`). Route policy'si burada: `PROTECTED_PREFIXES` listesindeki prefix'ler oturum ister, geri kalan her şey public'tir. Yeni bir authenticated alan eklenirse prefix bu listeye eklenmelidir. Oturumsuz kullanıcı `/auth/login?next=<hedef>`'e, oturumu açık kullanıcı `SIGNED_OUT_ONLY_ROUTES` üzerinden `/dashboard`'a yönlendirilir
+- `lib/supabase/proxy.ts` — `updateSession()`: session cookie'lerini yeniler ve `{ response, isAuthenticated }` döner. Redirect kararı vermez, o `proxy.ts`'in işidir
+- `components/` içindeki auth form'ları client component'tir (`"use client"`); `AuthButton` gibi auth kontrolleri server component'tir
+- Proxy yalnızca navigation'ları korur — route handler'lar ve server action'lar auth kontrolünü **kendileri** yapmalıdır
 
-### AI Integration
+### AI Entegrasyonu
 
-- Two models via Wiro API:
+- Wiro API üzerinden iki model:
   - **Product Photoshoot:** https://wiro.ai/models/wiro/product-photoshoot
   - **Product Ads:** https://wiro.ai/models/wiro/product-ads
-- Future: URL-to-video and AI avatar features
+- İleride: URL-to-video ve AI avatar özellikleri
 
 ### UI & Styling
 
-- shadcn/ui (new-york style) with components in `components/ui/`
-- Tailwind CSS with CSS-variable-based theming (light/dark via `next-themes`, class strategy)
-- CVA (class-variance-authority) for component variants
+- shadcn/ui (new-york style), component'ler `components/ui/` altında
+- CSS variable tabanlı theming ile Tailwind CSS (`next-themes` ile light/dark, class stratejisi)
+- Component variant'ları için CVA (class-variance-authority)
 - Icon library: `lucide-react`
-- `lib/utils.ts` exports `cn()` (clsx + tailwind-merge)
+- `lib/utils.ts` içinden `cn()` export edilir (clsx + tailwind-merge)
 
 ### Environment Variables
 
-Required: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (see `.env.example`)
+Zorunlu: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (bkz. `.env.example`)
 
 ## Code Style
 
-- 2-space indentation (enforced by ESLint)
-- PascalCase for types/interfaces/enums, camelCase for variables/functions
-- Blank lines required before `return` statements and around block-like statements
-- Object curly spacing: `{ key: value }` (spaces inside braces)
-- Path alias: `@/*` maps to project root
-- Server Components by default; add `"use client"` only when needed
+- 2 space indentation (ESLint tarafından zorunlu tutulur)
+- Type/interface/enum için PascalCase, değişken ve fonksiyonlar için camelCase
+- `return` ifadelerinden önce ve block benzeri ifadelerin etrafında boş satır zorunlu
+- Object curly spacing: `{ key: value }` (süslü parantez içinde boşluk)
+- Path alias: `@/*` proje köküne map edilir
+- Varsayılan olarak Server Component; `"use client"` yalnızca gerektiğinde eklenir
 
-### Component Structure
+### Component Yapısı
 
-- If a component exceeds ~500 lines or is an independent UI block (dialog, form section, etc.), extract it to a separate file
-- Props interface is defined directly above the component
-- Helper functions (formatCurrency, etc.) go outside the component, at the top of the file
-- `"use client"` only when interactivity is needed (state, event handlers, hooks)
+- Bir component ~500 satırı geçiyorsa veya bağımsız bir UI bloğuysa (dialog, form section vb.), ayrı bir dosyaya çıkarılır
+- Props interface'i component'in hemen üstünde tanımlanır
+- Helper fonksiyonlar (formatCurrency vb.) component'in dışında, dosyanın en üstünde yer alır
+- `"use client"` yalnızca interaktivite gerektiğinde (state, event handler, hook) kullanılır
 
-### Server Action Patterns
+### Server Action Pattern'leri
 
-Every server action follows this order:
-1. Create Supabase client and check auth (`if (!user) return { error: "..." }`)
+Her server action şu sırayı izler:
+1. Supabase client oluştur ve auth kontrolü yap (`if (!user) return { error: "..." }`)
 2. Input validation
-3. Build type-safe data object (`TablesInsert<"products">`, `TablesUpdate<"products">`)
-4. Database operation + error handling (`console.error` for logging)
+3. Type-safe data objesi oluştur (`TablesInsert<"products">`, `TablesUpdate<"products">`)
+4. Database işlemi + error handling (loglama için `console.error`)
 5. Cache invalidation (`revalidatePath`)
-6. Return success
+6. Başarı sonucunu dön
 
-Return types:
-- Single operations: `{ success?: boolean; error?: string; productId?: string }`
-- Bulk operations: `{ success: boolean; updatedCount?: number; error?: string }`
-- All error messages must be in **English**
+Return type'ları:
+- Tekil işlemler: `{ success?: boolean; error?: string; productId?: string }`
+- Toplu işlemler: `{ success: boolean; updatedCount?: number; error?: string }`
+- Tüm error mesajları **İngilizce** olmalı
 
-### Hook Patterns
+### Hook Pattern'leri
 
-- Naming: `use<Feature>` (e.g., `useProducts`)
-- Return interface is defined before the hook function
-- State naming: `isLoading` (starts `true` for fetching), `isUpdating` (starts `false` for mutations)
+- İsimlendirme: `use<Feature>` (örn. `useProducts`)
+- Return interface'i hook fonksiyonundan önce tanımlanır
+- State isimlendirmesi: `isLoading` (fetch için `true` ile başlar), `isUpdating` (mutation için `false` ile başlar)
 - Error state: `string | null`
-- Expose refetch: `refetch: fetchFn`
+- Refetch dışarı açılır: `refetch: fetchFn`
 
-### Error Handling & Notifications
+### Error Handling & Bildirimler
 
 - **Toast library**: Sonner (`import { toast } from "sonner"`)
-- Success: `toast.success("English message")`
-- Error: `toast.error("English message")`
-- Use `try/catch/finally` for async operations, reset loading state in `finally`
-- Buttons: `disabled={isLoading}`, text swap: `{isLoading ? "Updating..." : "Confirm"}`
+- Başarı: `toast.success("English message")`
+- Hata: `toast.error("English message")`
+- Async işlemlerde `try/catch/finally` kullan, loading state'i `finally` içinde sıfırla
+- Button'lar: `disabled={isLoading}`, metin değişimi: `{isLoading ? "Updating..." : "Confirm"}`
 - Data fetching: `{isLoading ? <Skeleton /> : <Content />}`
 
 ### Database Types
 
-- `lib/types/database.types.ts` — Supabase generated types
+- `types/database.types.ts` — Supabase tarafından üretilen type'lar
+- `types/helper.types.ts` — türetilmiş yardımcı type'lar (`SupabaseDBClient`, `UserProfile` vb.)

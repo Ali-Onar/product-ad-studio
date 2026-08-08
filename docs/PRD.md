@@ -1,198 +1,222 @@
-# Product Ad Studio — Product Requirements Document (PRD)
+# Product Ad Studio — Ürün Gereksinim Dokümanı (PRD)
 
-## 1. Overview
+## 1. Genel Bakış
 
-**Product Ad Studio** is an AI-powered visual and video ad generation platform for e-commerce sellers and marketing teams. Users upload product photos, and the platform generates professional product photos and animated video ads via AI models.
+**Product Ad Studio**, e-ticaret satıcıları ve pazarlama ekipleri için AI destekli görsel ve video reklam üretim platformudur. Kullanıcılar ürün fotoğraflarını yükler, platform AI modelleri aracılığıyla profesyonel ürün fotoğrafları ve animasyonlu video reklamlar üretir.
 
-### Vision
+### Vizyon
 
-Democratize professional ad content creation for e-commerce sellers. Replace expensive photography and video production with AI-powered generation that completes in seconds.
+Profesyonel reklam içeriği üretimini e-ticaret satıcıları için erişilebilir kılmak. Pahalı fotoğraf çekimi ve video prodüksiyonunun yerine, saniyeler içinde tamamlanan AI destekli üretimi koymak.
 
-### Target Audience
+### Hedef Kitle
 
-- E-commerce platform sellers (Trendyol, Hepsiburada, Amazon, Shopify, etc.)
-- Individual sellers on social media platforms
-- Marketing teams and agencies
+- E-ticaret platformu satıcıları (Trendyol, Hepsiburada, Amazon, Shopify vb.)
+- Sosyal medya platformlarındaki bireysel satıcılar
+- Pazarlama ekipleri ve ajanslar
 
-## 2. Core Features
+## 2. Temel Özellikler
 
-### 2.1 AI Product Photo Generation (MVP)
+### 2.1 AI Ürün Fotoğrafı Üretimi (MVP)
 
-- User uploads a product photo
-- AI generates professional-style product photos (different backgrounds, angles, styles)
-- Uses Wiro API — Product Photoshoot model
+- Kullanıcı bir ürün fotoğrafı yükler
+- AI profesyonel tarzda ürün fotoğrafları üretir (farklı arka planlar, açılar, stiller)
+- Wiro API — Product Photoshoot modeli kullanılır
 - **Model:** https://wiro.ai/models/wiro/product-photoshoot
 
-### 2.2 AI Video Ad Generation (MVP)
+### 2.2 AI Video Reklam Üretimi (MVP)
 
-- Animated video ad generation from a product photo
-- Output in social media-ready formats (9:16, 1:1, 16:9)
-- Uses Wiro API — Product Ads model
+- Ürün fotoğrafından animasyonlu video reklam üretimi
+- Sosyal medyaya hazır formatlarda çıktı (9:16, 1:1, 16:9)
+- Wiro API — Product Ads modeli kullanılır
 - **Model:** https://wiro.ai/models/wiro/product-ads
 
-### 2.3 Future Features
+### 2.3 Gelecek Özellikler
 
-- **URL-to-Video:** Automatic video ad generation from a product page URL
-- **AI Avatar:** AI avatar integration for product presentations
-- Batch processing
-- Brand templates and consistency
-- A/B test variations
+- **URL-to-Video:** Ürün sayfası URL'inden otomatik video reklam üretimi
+- **AI Avatar:** Ürün tanıtımları için AI avatar entegrasyonu
+- Batch processing (toplu işlem)
+- Marka şablonları ve tutarlılık
+- A/B test varyasyonları
 
-## 3. User Flows
+## 3. Kullanıcı Akışları
 
-### 3.1 Registration & Login
+### 3.1 Kayıt & Giriş
 
-1. User registers with email/password (Supabase Auth)
-2. Account activates after email verification
-3. Redirected to dashboard after login
+1. Kullanıcı e-posta/şifre ile kayıt olur (Supabase Auth)
+2. E-posta doğrulaması sonrası hesap aktifleşir
+3. Giriş sonrası dashboard'a yönlendirilir
 
-### 3.2 Product Photo Generation
+### 3.2 Ürün Fotoğrafı Üretimi
 
-1. User selects "New Photo" from the dashboard
-2. Uploads a product photo (Supabase Storage)
-3. Selects style, background, and other parameters
-4. AI generation starts (Wiro API)
-5. Results are displayed; user can download or request edits
+1. Kullanıcı dashboard'dan "New Photo" seçer
+2. Ürün fotoğrafı yükler (Supabase Storage)
+3. Stil, arka plan ve diğer parametreleri seçer
+4. AI üretimi başlar (Wiro API)
+5. Sonuçlar gösterilir; kullanıcı indirebilir veya düzenleme talep edebilir
 
-### 3.3 Video Ad Generation
+### 3.3 Video Reklam Üretimi
 
-1. User selects an existing product photo or uploads a new one
-2. Selects video format (9:16, 1:1, 16:9)
-3. Chooses animation style and other parameters
-4. AI video generation starts (Wiro API)
-5. Video preview is shown; user can download
+1. Kullanıcı mevcut bir ürün fotoğrafını seçer veya yeni bir tane yükler
+2. Video formatını seçer (9:16, 1:1, 16:9)
+3. Animasyon stilini ve diğer parametreleri belirler
+4. AI video üretimi başlar (Wiro API)
+5. Video önizlemesi gösterilir; kullanıcı indirebilir
 
-### 3.4 Credit / Subscription Management
+### 3.4 Kredi / Abonelik Yönetimi
 
-1. User selects a plan (Lemon Squeezy)
-2. Payment is processed
-3. Credit balance is updated
-4. Each generation consumes credits
+1. Kullanıcı bir plan seçer (Lemon Squeezy)
+2. Ödeme işlenir
+3. Kredi bakiyesi güncellenir
+4. Her üretim kredi harcar
 
-## 4. Technical Architecture
+## 4. Teknik Mimari
 
 ### 4.1 Frontend
 
-| Technology | Usage |
+| Teknoloji | Kullanım |
 |---|---|
-| Next.js 16 (App Router) | Framework, SSR/SSG, API routes |
+| Next.js 16 (App Router) | Framework, SSR/SSG, API route'ları |
 | React 19 | UI library |
 | TypeScript 5 | Type safety |
 | TailwindCSS | Styling |
 | shadcn/ui | UI component library |
-| React Hook Form + Zod | Form management and validation |
-| TanStack Table | Data tables (generation history, etc.) |
+| React Hook Form + Zod | Form yönetimi ve validation |
+| TanStack Table | Data table'lar (üretim geçmişi vb.) |
 
-### 4.2 Backend & Services
+### 4.2 Backend & Servisler
 
-| Technology | Usage |
+| Teknoloji | Kullanım |
 |---|---|
 | Supabase Auth | Authentication |
-| Supabase Database (PostgreSQL) | User data, generation history, credit balances |
-| Supabase Storage | Product photo uploads |
-| Wiro API | AI model integration (photo and video generation) |
-| Lemon Squeezy | Payment and subscription management |
-| Resend | Transactional email (if needed) |
+| Supabase Database (PostgreSQL) | Kullanıcı verileri, üretim geçmişi, kredi bakiyeleri |
+| Supabase Storage | Ürün fotoğrafı yüklemeleri ve üretim çıktıları |
+| Wiro API | AI model entegrasyonu (fotoğraf ve video üretimi) |
+| Lemon Squeezy | Ödeme ve abonelik yönetimi |
+| Resend | Transactional e-posta (gerekirse) |
 
-### 4.3 Infrastructure & DevOps
+### 4.3 Altyapı & DevOps
 
-| Technology | Usage |
+| Teknoloji | Kullanım |
 |---|---|
-| Cloudflare Workers | Edge functions, API proxy |
-| Cloudflare R2 | Storage for generated images/videos |
-| Cloudflare DNS | Domain management |
-| Cloudflare Bot Protection | Security |
+| Railway | Deploy platformu — uygulama hosting'i (Next.js Node.js server) |
+| Supabase Storage | Üretilen görsel/videolar ve kullanıcı yüklemeleri (private `generations` bucket) |
+| Cloudflare DNS | Domain yönetimi |
+| Cloudflare Bot Protection | Güvenlik |
+| Cloudflare R2 | *(İleride)* Blog thumbnail'leri, görseller ve projenin public dosyaları |
 
-## 5. Database Schema (Draft)
+**Kararlar:**
 
-### profiles
+- **Cloudflare Workers kullanılmıyor.** Wiro API çağrıları Next.js route handler'ları üzerinden server tarafında yapılır; ayrı bir edge katmanına ihtiyaç yok.
+- **Deploy platformu Railway.** Proxy ve route handler'lar Node.js runtime'da çalışır.
+- **Üretim çıktıları Supabase Storage'da.** Private bucket + signed URL; RLS ile aynı yetkilendirme modeli kullanılır.
+- **Cloudflare R2 ileriye dönük.** Blog altyapısı (faz 10) ve public statik dosyalar için değerlendirilecek — kullanıcıya özel üretim çıktıları için değil.
 
-| Column | Type | Description |
-|---|---|---|
-| id | uuid (PK, FK → auth.users) | User ID |
-| full_name | text | Full name |
-| avatar_url | text | Profile photo |
-| credits | integer | Remaining credits |
-| plan | text | Subscription plan |
-| created_at | timestamptz | Created at |
+## 5. Database Şeması
 
-### generations
+Şema tek kaynaktan yönetilir: [`supabase/migrations/20260331120000_initial_schema.sql`](../supabase/migrations/20260331120000_initial_schema.sql).
+TypeScript type'ları buradan generate edilir ve `types/database.types.ts` içinde tutulur. Kolon ve policy detayları için migration dosyasına bakılmalı — burada tekrarlanmaz.
 
-| Column | Type | Description |
-|---|---|---|
-| id | uuid (PK) | Generation ID |
-| user_id | uuid (FK → profiles) | User |
-| type | text | 'photo' or 'video' |
-| status | text | 'pending', 'processing', 'completed', 'failed' |
-| input_image_url | text | Uploaded product photo |
-| output_urls | text[] | Generated file URLs |
-| parameters | jsonb | Generation parameters |
-| credits_used | integer | Credits consumed |
-| created_at | timestamptz | Created at |
+**Tablolar:** `user_profiles`, `credit_balances`, `credit_transactions`, `subscriptions`, `generations`
+**Enum'lar:** `subscription_status`, `generation_status`, `generation_model`, `credit_transaction_type`
+**Fonksiyonlar:** `handle_new_user()`, `check_and_deduct_credits()`, `add_credits()`, `handle_updated_at()`
+**Storage:** private `generations` bucket
 
-### subscriptions
+Migration'dan okunamayan, ürün tarafını ilgilendiren iki karar:
 
-| Column | Type | Description |
-|---|---|---|
-| id | uuid (PK) | Subscription ID |
-| user_id | uuid (FK → profiles) | User |
-| lemon_squeezy_id | text | Lemon Squeezy subscription ID |
-| plan | text | Plan name |
-| status | text | 'active', 'cancelled', 'past_due' |
-| current_period_end | timestamptz | Current period end |
-| created_at | timestamptz | Created at |
+- Üretim dosyaları public URL olarak değil **storage path** olarak saklanır; bucket private'tır, gösterim ve indirme için signed URL üretilir.
+- Kredi düşümü `check_and_deduct_credits()` ile atomik yapılır (satır `FOR UPDATE` ile kilitlenir); uygulama katmanında bakiye okuyup ayrıca güncelleme yapılmaz.
 
-## 6. API Integrations
+## 6. API Entegrasyonları
 
 ### 6.1 Wiro API
 
-- **Product Photoshoot:** Product photo generation
-- **Product Ads:** Video ad generation
-- API key used securely on the server-side
-- Async processing: result tracking via webhook or polling
+- **Product Photoshoot:** Ürün fotoğrafı üretimi
+- **Product Ads:** Video reklam üretimi
+- API key server tarafında güvenli şekilde kullanılır
+- Asenkron işlem: sonuç takibi webhook veya polling ile
 
 ### 6.2 Lemon Squeezy
 
-- Checkout session creation
-- Subscription status tracking via webhooks
-- Credit loading and plan management
+- Checkout session oluşturma
+- Webhook'lar ile abonelik durumu takibi
+- Kredi yükleme ve plan yönetimi
 
-### 6.3 Resend (Optional)
+### 6.3 Resend (Opsiyonel)
 
-- Welcome email
-- Generation completed notification
-- Subscription notifications
+- Hoş geldin e-postası
+- Üretim tamamlandı bildirimi
+- Abonelik bildirimleri
 
-## 7. Page Structure
+## 7. Sayfa Yapısı
+
+**Public (proxy tarafından korunmaz):**
 
 ```
 /                         → Landing page
-/auth/login               → Login
-/auth/sign-up             → Registration
-/auth/forgot-password     → Password reset
-/dashboard                → Main panel (generation history, credit status)
-/dashboard/generate       → Start new generation
-/dashboard/history        → Generation history (TanStack Table)
-/dashboard/settings       → Account settings
-/pricing                  → Pricing plans
+/pricing                  → Fiyatlandırma planları
+/about                    → Hakkımızda
+/contact                  → İletişim
+/blog, /blog/[slug]       → Blog
+/auth/login               → Giriş
+/auth/sign-up             → Kayıt
+/auth/forgot-password     → Şifre sıfırlama
+/auth/update-password     → Şifre güncelleme
+/auth/confirm             → E-posta/OAuth doğrulama (route handler)
 ```
 
-## 8. MVP Scope
+**Protected (`/dashboard` prefix'i — oturum zorunlu):**
 
-**Included:**
-- Email/password registration and login
-- Product photo upload
-- AI product photo generation (Wiro Product Photoshoot)
-- AI video ad generation (Wiro Product Ads)
-- Generation history view
-- Basic credit system (monthly subscription)
-- Payment via Lemon Squeezy
-- Responsive design
+```
+/dashboard                → Ana panel (özet, kredi durumu)
+/dashboard/image          → Image Studio (Wiro Product Photoshoot)
+/dashboard/video          → Video Studio (Wiro Product Ads)
+/dashboard/history        → Üretim geçmişi (TanStack Table)
+/dashboard/settings       → Hesap ayarları, profil, kredi geçmişi
+```
 
-**Excluded (Post-MVP):**
+Route koruması `proxy.ts` içindeki `PROTECTED_PREFIXES` listesiyle yapılır: yalnızca bu prefix'ler oturum ister, geri kalan her şey public'tir. Yeni bir authenticated alan eklenirse prefix bu listeye eklenmelidir. Proxy yalnızca navigation'ları korur — route handler'lar ve server action'lar auth kontrolünü kendileri yapmalıdır.
+
+**Yönlendirme davranışı:**
+
+- Oturumsuz kullanıcı protected bir route'a girerse `/auth/login?next=<hedef>`'e yönlendirilir; giriş sonrası login form kullanıcıyı hedefe geri götürür. `next` değeri yalnızca same-origin path kabul eder (open redirect koruması).
+- Oturumu açık kullanıcı `/auth/login` veya `/auth/sign-up`'a girerse `/dashboard`'a yönlendirilir. `/auth/update-password` ve `/auth/confirm` bunun dışındadır — şifre kurtarma akışı bu route'lara authenticated olarak gelir.
+
+## 8. MVP Kapsamı
+
+**Dahil:**
+- E-posta/şifre ile kayıt ve giriş
+- Ürün fotoğrafı yükleme
+- AI ürün fotoğrafı üretimi (Wiro Product Photoshoot)
+- AI video reklam üretimi (Wiro Product Ads)
+- Üretim geçmişi görüntüleme
+- Temel kredi sistemi (aylık abonelik)
+- Lemon Squeezy ile ödeme
+- Responsive tasarım
+
+**Hariç (MVP Sonrası):**
 - URL-to-video
 - AI avatar
 - Batch processing
-- Team/organization management
-- OAuth login (Google, GitHub)
-- Advanced analytics
+- Takım/organizasyon yönetimi
+- OAuth ile giriş (Google, GitHub)
+- Gelişmiş analytics
+
+## 9. Proje Fazları
+
+| # | Faz | Kapsam | Durum |
+|---|---|---|---|
+| 1 | Proje tanıtımı + fikir + tech stack kararları | PRD, CLAUDE.md, README, teknoloji seçimleri | ✅ Tamamlandı |
+| 2 | Proje kurulumu | Next.js 16, ESLint flat config, Supabase client'ları, shadcn/ui, Tailwind v4, klasör yapısı | ✅ Tamamlandı |
+| 3 | Auth | Supabase Auth, login/sign-up/forgot-password/update-password, confirm route, `/dashboard` koruması, `proxy.ts` | ✅ Tamamlandı |
+| 4 | Database şeması + Supabase kurulumu | Migration (enum'lar, tablolar, RLS policy'leri, trigger'lar), storage bucket, generated types | ✅ Tamamlandı |
+| 5 | Image Studio — UI + Wiro entegrasyonu | Upload UI, parametre formu, Wiro Product Photoshoot API entegrasyonu | ⬜ Yapılacak |
+| 6 | Image Studio — polling + sonuç gösterimi | Job polling mekanizması, sonuç galerisi, indirme | ⬜ Yapılacak |
+| 7 | Video Studio — Effect picker UI | 150+ preset, video preview, seçim arayüzü | ⬜ Yapılacak |
+| 8 | Video Studio — Wiro entegrasyonu + polling | Wiro Product Ads API entegrasyonu, job polling | ⬜ Yapılacak |
+| 9 | Dashboard | Geçmiş üretimler, TanStack Table, indirme | ⬜ Yapılacak |
+| 10 | Landing page & kurumsal sayfalar | Landing page tasarımı, logo, hakkımızda, iletişim, blog altyapısı | ⬜ Yapılacak |
+| 11 | Kredi sistemi | Lemon Squeezy entegrasyonu, webhook, kredi satın alma | ⬜ Yapılacak |
+| 12 | Settings & profil | Hesap ayarları, profil, kredi geçmişi | ⬜ Yapılacak |
+| 13 | Deploy | Railway üzerinde production deployment | ⬜ Yapılacak |
+
+**Durum açıklamaları:** ✅ Tamamlandı · 🚧 Devam ediyor · ⬜ Yapılacak

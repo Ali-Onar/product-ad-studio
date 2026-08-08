@@ -7,8 +7,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+
+const DEFAULT_REDIRECT = "/dashboard";
+
+/**
+ * Only same-origin absolute paths are allowed. Rejects protocol-relative
+ * values like "//evil.com" and "/\evil.com" so a crafted `next` query param
+ * cannot turn the login page into an open redirect.
+ */
+function safeRedirect(next: string | null) {
+  if (!next || !next.startsWith("/") || next[1] === "/" || next[1] === "\\") {
+    return DEFAULT_REDIRECT;
+  }
+
+  return next;
+}
 
 export function LoginForm({
   className,
@@ -19,6 +34,7 @@ export function LoginForm({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,8 +48,8 @@ export function LoginForm({
         password,
       });
       if (error) throw error;
-      // Update this route to redirect to an authenticated route. The user already has an active session.
-      router.push("/protected");
+      // Back to the page the proxy redirected away from, or the dashboard.
+      router.push(safeRedirect(searchParams.get("next")));
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
