@@ -1,9 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Suspense } from "react";
 
-async function ErrorContent({
-  searchParams,
-}: {
+async function ErrorContent({ searchParams, }: {
   searchParams: Promise<{ error: string }>;
 }) {
   const params = await searchParams;
@@ -23,9 +21,7 @@ async function ErrorContent({
   );
 }
 
-export default function Page({
-  searchParams,
-}: {
+export default function Page({ searchParams, }: {
   searchParams: Promise<{ error: string }>;
 }) {
   return (
