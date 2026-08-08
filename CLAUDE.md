@@ -59,7 +59,18 @@ Next.js 16 (App Router), React 19, TypeScript 5, Supabase, TailwindCSS ve shadcn
 - Wiro API üzerinden iki model:
   - **Product Photoshoot:** https://wiro.ai/models/wiro/product-photoshoot
   - **Product Ads:** https://wiro.ai/models/wiro/product-ads
+- `lib/wiro/client.ts` — server tarafı Wiro client'ı (`server-only`). Her istek imzalanır: `x-api-key`, `x-nonce` (unix timestamp) ve `x-signature` = `HMAC-SHA256(mesaj = API_SECRET + NONCE, key = API_KEY)`. Dikkat: HMAC key'i **API key**, mesajın parçası ise **secret** — ters değil. Wiro hataları HTTP 200 + `result: false` olarak da gelebilir, ikisi de kontrol edilir
+- `lib/wiro/types.ts` — task status'leri ve response tipleri
+- `lib/generation/product-photoshoot.ts` — model parametreleri (Wiro JSON schema'sının aynası), Zod schema'ları, kredi maliyeti, form alan config'i
+- Private bucket'taki input görseli Wiro'ya kısa ömürlü **signed URL** ile verilir
 - İleride: URL-to-video ve AI avatar özellikleri
+
+### Kredi Sistemi
+
+- Bakiye ve hareketler `credit_balances` / `credit_transactions` tablolarında
+- `check_and_deduct_credits()` ve `add_credits()` **yalnızca service_role** ile çağrılabilir — bu fonksiyonlar user id'yi parametre olarak aldığı için client'a açık bırakılamaz
+- Server tarafında `lib/supabase/admin.ts` içindeki `createAdminClient()` kullanılır; oturum doğrulaması **önce** yapılır
+- Üretim akışı: satır oluştur → kredi düş → Wiro'yu çağır → başarısızsa iade et ve satırı `failed` işaretle
 
 ### UI & Styling
 
@@ -71,7 +82,15 @@ Next.js 16 (App Router), React 19, TypeScript 5, Supabase, TailwindCSS ve shadcn
 
 ### Environment Variables
 
-Zorunlu: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (bkz. `.env.example`)
+Zorunlu (bkz. `.env.example`):
+
+| Değişken | Kullanım |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase proje URL'i |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase publishable (anon) key |
+| `SUPABASE_SECRET_KEY` | Secret key (eski adıyla service_role key); RLS'i bypass eder, tarayıcıya asla verilmez |
+| `WIRO_API_KEY` | Wiro project API key — server-side |
+| `WIRO_API_SECRET` | Wiro API secret; request imzasında kullanılır — server-side |
 
 ## Code Style
 

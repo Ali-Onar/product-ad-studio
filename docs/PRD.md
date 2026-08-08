@@ -130,10 +130,21 @@ Migration'dan okunamayan, ürün tarafını ilgilendiren iki karar:
 
 ### 6.1 Wiro API
 
-- **Product Photoshoot:** Ürün fotoğrafı üretimi
-- **Product Ads:** Video reklam üretimi
-- API key server tarafında güvenli şekilde kullanılır
-- Asenkron işlem: sonuç takibi webhook veya polling ile
+- **Base URL:** `https://api.wiro.ai/v1`
+- **Auth:** Signature-based, yalnızca server tarafında. Üç header zorunlu:
+  - `x-api-key` (`WIRO_API_KEY`)
+  - `x-nonce` — unix timestamp
+  - `x-signature` — `HMAC-SHA256(mesaj = WIRO_API_SECRET + NONCE, key = WIRO_API_KEY)`, hex
+- **Çalıştırma:** `POST /Run/wiro/product-photoshoot` → `{ result, errors, taskid, socketaccesstoken }`
+  - **Product Photoshoot:** Ürün fotoğrafı üretimi
+  - **Product Ads:** Video reklam üretimi
+- **Takip:** `POST /Task/Detail` (`taskid` veya `tasktoken` ile) → `tasklist[0].status` + `pexit` + `outputs[]`
+  - Terminal status'ler: `task_postprocess_end`, `task_cancel`, `task_error`
+  - Başarı ölçütü `pexit === "0"`; başarısız task ücretlendirilmez
+- **Callback:** İsteğe bağlı `callbackUrl` parametresi — task bitince Wiro sonucu POST eder. **Şu an kullanılmıyor**, sonuç takibi client polling ile yapılıyor (4 saniyede bir `syncGeneration` server action'ı)
+- **Input dosyası:** Model dosyayı kendi indirir, bu yüzden private bucket'taki görsel için kısa ömürlü signed URL verilir
+- **Çıktı dosyası:** Wiro'nun CDN URL'i tahmin edilemez ama **auth'suz erişilebilir** ve saklama süresi bizim kontrolümüzde değil. Bu yüzden çıktı sunucu tarafında indirilip kendi private bucket'ımıza yazılır (`output_storage_paths`), kullanıcıya signed URL ile sunulur
+- **Not:** Wiro hataları HTTP 200 + `result: false` olarak da dönebilir; iki kontrol de yapılır
 
 ### 6.2 Lemon Squeezy
 
@@ -209,8 +220,8 @@ Route koruması `proxy.ts` içindeki `PROTECTED_PREFIXES` listesiyle yapılır: 
 | 2 | Proje kurulumu | Next.js 16, ESLint flat config, Supabase client'ları, shadcn/ui, Tailwind v4, klasör yapısı | ✅ Tamamlandı |
 | 3 | Auth | Supabase Auth, login/sign-up/forgot-password/update-password, confirm route, `/dashboard` koruması, `proxy.ts` | ✅ Tamamlandı |
 | 4 | Database şeması + Supabase kurulumu | Migration (enum'lar, tablolar, RLS policy'leri, trigger'lar), storage bucket, generated types | ✅ Tamamlandı |
-| 5 | Image Studio — UI + Wiro entegrasyonu | Upload UI, parametre formu, Wiro Product Photoshoot API entegrasyonu | ⬜ Yapılacak |
-| 6 | Image Studio — polling + sonuç gösterimi | Job polling mekanizması, sonuç galerisi, indirme | ⬜ Yapılacak |
+| 5 | Image Studio — UI + Wiro entegrasyonu | Upload UI, parametre formu, Wiro Product Photoshoot API entegrasyonu, kredi düşümü | ✅ Tamamlandı |
+| 6 | Image Studio — polling + sonuç gösterimi | Job polling, çıktıyı CDN'den bucket'a indirme, sonuç galerisi, indirme | 🚧 Devam ediyor |
 | 7 | Video Studio — Effect picker UI | 150+ preset, video preview, seçim arayüzü | ⬜ Yapılacak |
 | 8 | Video Studio — Wiro entegrasyonu + polling | Wiro Product Ads API entegrasyonu, job polling | ⬜ Yapılacak |
 | 9 | Dashboard | Geçmiş üretimler, TanStack Table, indirme | ⬜ Yapılacak |
