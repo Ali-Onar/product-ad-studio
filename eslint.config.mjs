@@ -1,14 +1,9 @@
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { FlatCompat } from '@eslint/eslintrc';
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({ baseDirectory: __dirname, });
+import nextCoreWebVitals from 'eslint-config-next/core-web-vitals';
+import nextTypeScript from 'eslint-config-next/typescript';
 
 const eslintConfig = [
   // Global ignores
@@ -16,7 +11,8 @@ const eslintConfig = [
 
   // Base configs
   eslint.configs.recommended,
-  ...compat.extends('next/core-web-vitals', 'next/typescript'),
+  ...nextCoreWebVitals,
+  ...nextTypeScript,
 
   // TypeScript files
   {
@@ -47,6 +43,7 @@ const eslintConfig = [
         ignoreComments: true,
         ignoreUrls: true,
         ignoreTemplateLiterals: true,
+        ignoreStrings: true,
       }],
 
       // Object curly newline
@@ -162,6 +159,7 @@ const eslintConfig = [
         ignoreComments: true,
         ignoreUrls: true,
         ignoreTemplateLiterals: true,
+        ignoreStrings: true,
       }],
       'object-curly-newline': ['error', {
         ObjectExpression: { multiline: true, minProperties: 4 },
@@ -191,7 +189,7 @@ const eslintConfig = [
 
   // Config files - allow require()
   {
-    files: ['*.config.ts', '*.config.js', '*.config.mjs', 'tailwind.config.ts'],
+    files: ['*.config.ts', '*.config.js', '*.config.mjs'],
     rules: { '@typescript-eslint/no-require-imports': 'off', },
   },
 ];
